@@ -1,0 +1,25 @@
+# Node
+node_modules/
+npm-debug.log*
+dist/
+
+# C++ (CMake)
+engine/build/
+build/
+*.o
+*.out
+
+# Datos generados (la caché se regenera)
+data/cache/*
+!data/cache/.gitkeep
+
+# Secretos (claves de APIs)
+.env
+.env.*
+!.env.example
+
+# Editores y sistema
+.vscode/
+.idea/
+*.swp
+.DS_Store
