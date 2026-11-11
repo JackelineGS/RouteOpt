@@ -5,6 +5,7 @@
 #include <nlohmann/json.hpp>
 
 #include "instance.hpp"
+#include "solve.hpp"
 
 using json = nlohmann::json;
 
@@ -33,9 +34,11 @@ int main() {
         const json req = json::parse(input);
         const std::string mode = req.at("mode").get<std::string>();
         if (mode == "ping") {
-            response = {{"status", "ok"}, {"engine", "routeopt-engine"}, {"version", "0.1.0"}};
+            response = {{"status", "ok"}, {"engine", "routeopt-engine"}, {"version", "0.2.0"}};
         } else if (mode == "generate") {
             response = handle_generate(req);
+        } else if (mode == "solve") {
+            response = handle_solve(req);
         } else {
             response = error_response("UNKNOWN_MODE", "Modo no soportado: " + mode);
         }
@@ -49,3 +52,4 @@ int main() {
     std::cout << response.dump() << std::endl;
     return 0;
 }
+

@@ -14,5 +14,9 @@ add_compile_options(-Wall -Wextra)
 add_executable(routeopt-engine
   src/main.cpp
   src/instance.cpp
+  src/route.cpp
+  src/nearest_neighbor.cpp
+  src/metrics.cpp
+  src/solve.cpp
 )
 target_include_directories(routeopt-engine PRIVATE include)

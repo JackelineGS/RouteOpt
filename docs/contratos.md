@@ -71,7 +71,7 @@ Respuesta:
   "distance_source": "haversine",
   "route": [0, 4, 2, 1, 3],
   "cost_m": 38210.5,
-  "metrics": {"time_ms": 0.4, "peak_memory_kb": 5120, "operations": 25},
+  "metrics": {"time_ms": 0.4, "baseline_memory_kb": 4800, "peak_memory_kb": 5120, "operations": 25},
   "error": null
 }
 ```
@@ -79,6 +79,11 @@ Respuesta:
 - `status`: `ok`, `timeout` o `error`.
 - El tiempo se mide dentro de C++ con reloj monótono, sin contar el arranque del proceso.
 - La memoria pico se lee del propio proceso.
+- La memoria se reporta en dos cifras: `baseline_memory_kb` (justo antes de ejecutar el
+  algoritmo) y `peak_memory_kb` (pico durante la ejecución). El incremento
+  (`peak_memory_kb - baseline_memory_kb`) es lo atribuible al algoritmo.
+- Si `status` es `timeout`, `route` y `cost_m` vienen en `null`. `metrics` sí se
+  devuelve, con lo medido hasta el corte.
 
 ### 3.4 Modo `compare` (pendiente)
 
@@ -143,3 +148,5 @@ demás de tipo `client`.
 ## 5. Registro de cambios
 
 - 0.1: versión inicial.
+- 0.2: se agrega `metrics.baseline_memory_kb`; se documenta que `timeout` devuelve
+  `route` y `cost_m` en `null`; se elimina `"file"` como valor de `distance_source`.
