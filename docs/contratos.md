@@ -28,8 +28,7 @@ Si algo cambia, se modifica este archivo primero y se avisa al equipo.
 ```
 
 - `distance_source`: `"haversine"` (el motor calcula la matriz con las coordenadas),
-  `"matrix"` (viene en `matrix`, n×n, en metros) o `"file"` si la matriz vino de un archivo
-  (en ese caso también se envía en `matrix`).
+  `"matrix"` (viene en `matrix`, n×n, en metros).
 - Para benchmarks grandes se usa siempre `haversine`: no se mueven matrices enormes por JSON.
 - Cada resultado registra su `distance_source`; no se mezclan fuentes dentro de un experimento.
 
