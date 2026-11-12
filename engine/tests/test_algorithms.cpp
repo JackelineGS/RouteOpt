@@ -127,12 +127,46 @@ static void test_timeout() {
     CHECK(hk.timed_out);
 }
 
+static void test_backtracking() {
+    Deadline none;
+    const double tol = 1e-6;
+    std::string why;
+
+    const Matrix d4 = {{0, 10, 15, 20}, {10, 0, 35, 25}, {15, 35, 0, 30}, {20, 25, 30, 0}};
+    const AlgoResult bt4 = backtracking(d4, none);
+    CHECK(validate_route(bt4.route, 4, why));
+    CHECK(std::fabs(route_cost(d4, bt4.route) - 80.0) < tol);
+
+    for (int n = 4; n <= 9; ++n) {
+        for (unsigned seed = 1; seed <= 20; ++seed) {
+            const Matrix d = make_matrix(n, seed);
+            const AlgoResult bt = backtracking(d, none);
+            CHECK(validate_route(bt.route, static_cast<size_t>(n), why));
+            CHECK(std::fabs(route_cost(d, bt.route) - brute_force_optimum(d)) <= tol);
+        }
+    }
+
+    for (unsigned seed = 1; seed <= 5; ++seed) {
+        const Matrix d = make_matrix(12, seed);
+        const AlgoResult bt = backtracking(d, none);
+        const AlgoResult hk = held_karp(d, none);
+        CHECK(std::fabs(route_cost(d, bt.route) - route_cost(d, hk.route)) <= tol);
+    }
+
+    const Matrix d40 = make_matrix(40, 1);
+    Deadline dl;
+    dl.enabled = true;
+    dl.limit = std::chrono::steady_clock::now() + std::chrono::milliseconds(1);
+    CHECK(backtracking(d40, dl).timed_out);
+}
+
 int main() {
     test_validator();
     test_handmade();
     test_against_bruteforce();
     test_medium_instances();
     test_timeout();
+    test_backtracking();
     std::cout << g_checks << " comprobaciones, " << g_failures << " fallos\n";
     return g_failures == 0 ? 0 : 1;
 }

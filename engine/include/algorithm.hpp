@@ -24,3 +24,4 @@ using AlgorithmFn = AlgoResult (*)(const Matrix&, const Deadline&);
 AlgoResult nearest_neighbor(const Matrix& d, const Deadline& deadline);
 AlgoResult mst_dfs(const Matrix& d, const Deadline& deadline);
 AlgoResult held_karp(const Matrix& d, const Deadline& deadline);
+AlgoResult backtracking(const Matrix& d, const Deadline& deadline);

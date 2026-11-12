@@ -7,6 +7,7 @@ const ALGORITHMS = [
   { id: 'nearest_neighbor', label: 'Nearest Neighbor', kind: 'Heurística', color: '#d97706' },
   { id: 'mst_dfs', label: 'MST + DFS', kind: 'Aproximado', color: '#7c3aed' },
   { id: 'held_karp', label: 'Held-Karp', kind: 'Exacto, máx. 20 nodos', color: '#059669' },
+  { id: 'backtracking', label: 'Backtracking (B&B)', kind: 'Exacto, con poda', color: '#0891b2' },
 ]
 const STATUS_LABEL = { ok: 'OK', timeout: 'Tiempo agotado', skipped: 'No admite este tamaño' }
 

@@ -12,7 +12,7 @@ module.exports = {
   MAX_TIME_LIMIT_MS: 120000,
   KILL_MARGIN_MS: 5000,
   MAX_OUTPUT_BYTES: 64 * 1024 * 1024,
-  ALGORITHMS: ['nearest_neighbor', 'mst_dfs', 'held_karp'],
+  ALGORITHMS: ['nearest_neighbor', 'mst_dfs', 'held_karp', 'backtracking'],
   CORS_ORIGINS: ['http://localhost:5173', 'http://127.0.0.1:5173'],
 };
 

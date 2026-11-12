@@ -91,7 +91,7 @@ Respuesta:
 | `nearest_neighbor` | 5000 | Comparaciones de distancias |
 | `mst_dfs` | 5000 | Aristas evaluadas en Prim, n(n-1)/2 |
 | `held_karp` | 20 | Transiciones de la tabla, m(m-1)·2^(m-2), con m = n-1 |
-
+| `backtracking` | 100 | Nodos del árbol de búsqueda explorados |
 
 ### 3.4 Modo `compare` (eliminado)
 
@@ -226,3 +226,4 @@ como `skipped`.
 - 0.3: algoritmos `mst_dfs` y `held_karp`; límites de tamaño por algoritmo.
 - 0.4: el gap se calcula en el servidor (`/api/compare`); se elimina el modo `compare`
   del motor; se agregan `/api/health`, los estados `skipped` y los códigos de error HTTP.
+- 0.5: algoritmo backtracking (branch and bound con poda).

@@ -21,6 +21,7 @@ static const std::map<std::string, AlgorithmInfo>& registry() {
         {"nearest_neighbor", {nearest_neighbor, 5000}},
         {"mst_dfs", {mst_dfs, 5000}},
 	{"held_karp", {held_karp, 20}},
+        {"backtracking", {backtracking, 100}},
     };
     return r;
 }

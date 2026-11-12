@@ -17,6 +17,7 @@ add_library(routeopt_core STATIC
   src/nearest_neighbor.cpp
   src/mst_dfs.cpp
   src/held_karp.cpp
+  src/backtracking.cpp
   src/metrics.cpp
   src/solve.cpp
 )
