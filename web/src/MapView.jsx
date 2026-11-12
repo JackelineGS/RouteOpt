@@ -12,6 +12,24 @@ function textTooltip(text) {
   return el
 }
 
+// Insignia con el orden de visita, junto al círculo del cliente.
+function orderBadge(lat, lon, position, color) {
+  const el = document.createElement('span')
+  el.className = 'order-badge-inner'
+  el.textContent = String(position)
+  el.style.borderColor = color
+  return L.marker([lat, lon], {
+    interactive: false,
+    keyboard: false,
+    icon: L.divIcon({
+      className: 'order-badge',
+      html: el,
+      iconSize: [18, 18],
+      iconAnchor: [-1, 19],
+    }),
+  })
+}
+
 export default function MapView({ instance, route, routeColor }) {
   const containerRef = useRef(null)
   const mapRef = useRef(null)
@@ -45,7 +63,7 @@ export default function MapView({ instance, route, routeColor }) {
     const nodes = instance.nodes
     const order = new Map()
     if (route) route.forEach((nodeId, pos) => order.set(nodeId, pos))
-    const showLabels = Boolean(route) && nodes.length <= LABEL_MAX_NODES
+    const showLabels = nodes.length <= LABEL_MAX_NODES
 
     if (route) {
       const points = route.map((id) => [nodes[id].lat, nodes[id].lon])
@@ -64,11 +82,16 @@ export default function MapView({ instance, route, routeColor }) {
       }).addTo(layer)
 
       if (showLabels) {
-        marker.bindTooltip(textTooltip(isDepot ? 'D' : String(order.get(i))), {
+        // Dentro del círculo: id del cliente ("D" para el depósito).
+        marker.bindTooltip(textTooltip(isDepot ? 'D' : String(i)), {
           permanent: true,
           direction: 'center',
           className: 'node-label',
         })
+        // Insignia: orden de visita en la ruta mostrada.
+        if (route && !isDepot && order.has(i)) {
+          orderBadge(nd.lat, nd.lon, order.get(i), routeColor).addTo(layer)
+        }
       } else {
         const visit = route && order.has(i) && !isDepot ? ` · visita #${order.get(i)}` : ''
         marker.bindTooltip(textTooltip(`${nd.name || `Nodo ${i}`}${visit}`))
@@ -83,3 +106,4 @@ export default function MapView({ instance, route, routeColor }) {
 
   return <div ref={containerRef} className="map" />
 }
+  

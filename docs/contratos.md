@@ -50,7 +50,7 @@ Salida: `{"status": "ok", "engine": "routeopt-engine", "version": "0.1.0"}`
  "area": {"lat_min": -12.15, "lat_max": -11.95, "lon_min": -77.12, "lon_max": -76.95}}
 ```
 
-- `seed` por defecto: 42. `area` es opcional (por defecto, un rectángulo aproximado de Lima).
+- `seed` por defecto: 42. `area` es opcional (- 0.7: área por defecto de generate acotada a zona de tierra (lat -12.11 a -11.98, lon -77.03 a -76.95).
 - Con la misma semilla, `n` y `area`, el resultado es idéntico (reproducibilidad).
 - Respuesta: `{"status": "ok", "instance": { ...instancia... }}`
 

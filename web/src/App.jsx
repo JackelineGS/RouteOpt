@@ -244,8 +244,10 @@ export default function App() {
         <main>
           <MapView instance={instance} route={route} routeColor={routeColor} />
           <p className="map-note">
-            Punto rojo: centro de distribución. Los números indican el orden de visita (hasta 40
-            nodos). Las líneas son rectas porque las distancias son Haversine (modo simulado).
+            Punto rojo (D): centro de distribución. El número dentro del círculo es el id del
+            cliente (el mismo de la tabla y de la ruta); la insignia blanca indica el orden de
+            visita de la ruta mostrada. Las etiquetas se muestran hasta 40 nodos. Las líneas son
+            rectas porque las distancias son Haversine (modo simulado).
           </p>
         </main>
       </div>

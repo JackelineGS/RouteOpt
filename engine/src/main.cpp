@@ -17,9 +17,9 @@ static json handle_generate(const json& req) {
     const int n = req.at("n").get<int>();
     const unsigned seed = req.value("seed", 42u);
     const json area = req.value("area", json::object());
-    const double lat_min = area.value("lat_min", -12.15);
-    const double lat_max = area.value("lat_max", -11.95);
-    const double lon_min = area.value("lon_min", -77.12);
+    const double lat_min = area.value("lat_min", -12.11);
+    const double lat_max = area.value("lat_max", -11.98);
+    const double lon_min = area.value("lon_min", -77.03);
     const double lon_max = area.value("lon_max", -76.95);
 
     Instance inst = generate_instance(n, seed, lat_min, lat_max, lon_min, lon_max);

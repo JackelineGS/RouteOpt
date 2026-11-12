@@ -40,4 +40,5 @@ th:first-child, td:first-child { text-align: left; }
 tr.best { background: #ecfdf5; }
 .kind { color: #6b7280; font-size: 0.8rem; }
 .route-text { font-family: ui-monospace, monospace; font-size: 0.85rem; word-break: break-word; margin-top: 10px; }
-
+.order-badge { background: transparent; border: none; }
+.order-badge-inner { display: flex; align-items: center; justify-content: center; width: 18px; height: 18px; box-sizing: border-box; border-radius: 50%; background: #fff; border: 2px solid #374151; color: #111827; font-size: 10px; font-weight: 700; line-height: 1; }
