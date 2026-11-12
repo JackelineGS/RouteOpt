@@ -27,7 +27,11 @@ computacional y la diferencia entre soluciones exactas, aproximadas y heurístic
 
 ## 2. Arquitectura y carpetas
 
-Los bloques a–e son los de la propuesta del profesor. El detalle de los mensajes entre las
+![Arquitectura lógica de RouteOpt](docs/arquitectura.png)
+*Figura 1. Arquitectura lógica de RouteOpt. El diagrama muestra el diseño completo del sistema; los componentes que aún no están implementados figuran en la tabla de la sección 1.*
+
+
+Las capas de a–e son los de la propuesta del profesor. El detalle de los mensajes entre las
 piezas está en [`docs/contratos.md`](docs/contratos.md).
 
 | Carpeta | Bloque | Contenido |
@@ -42,10 +46,7 @@ Flujo: React → servidor Node (`127.0.0.1:3001`) → ejecutable `routeopt-engin
 (recibe JSON por la entrada estándar y responde JSON por la salida estándar; un proceso
 por ejecución).
 
-![Arquitectura lógica de RouteOpt](docs/arquitectura.png)
-*Figura 1. Arquitectura lógica de RouteOpt. El diagrama muestra el diseño completo del sistema; los componentes que aún no están implementados figuran en la tabla de la sección 1.*
-
-![Arquitectura lógica de RouteOpt](docs/arquitectura.png)
+![Arquitectura lógica de RouteOpt](docs/demo.png)
 *Figura 2. Vista de la demo. Lo primero que se ve es la instancia donde se define la cantidad de nodos y la semilla. Posteriormente estan listados los algoritmos.*
 
 ### 2.1 Conceptos clave: N y semilla
