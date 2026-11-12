@@ -43,8 +43,10 @@ Flujo: React → servidor Node (`127.0.0.1:3001`) → ejecutable `routeopt-engin
 por ejecución).
 
 ![Arquitectura lógica de RouteOpt](docs/arquitectura.png)
-*Figura 1. Arquitectura lógica de RouteOpt. El diagrama muestra el diseño completo del
-sistema; los componentes que aún no están implementados figuran en la tabla de la sección 1.*
+*Figura 1. Arquitectura lógica de RouteOpt. El diagrama muestra el diseño completo del sistema; los componentes que aún no están implementados figuran en la tabla de la sección 1.*
+
+![Arquitectura lógica de RouteOpt](docs/arquitectura.png)
+*Figura 2. Vista de la demo. Lo primero que se ve es la instancia donde se define la cantidad de nodos y la semilla. Posteriormente estan listados los algoritmos.*
 
 ### 2.1 Conceptos clave: N y semilla
 
