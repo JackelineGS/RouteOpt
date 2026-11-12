@@ -46,6 +46,47 @@ por ejecución).
 *Figura 1. Arquitectura lógica de RouteOpt. El diagrama muestra el diseño completo del
 sistema; los componentes que aún no están implementados figuran en la tabla de la sección 1.*
 
+### 2.1 Conceptos clave: N y semilla
+
+**N (tamaño de la instancia).** Es el número total de nodos, **incluyendo el depósito**.
+El nodo 0 es siempre el centro de distribución y los nodos 1..N−1 son los clientes. En la
+web se llama "Nodos (con depósito)" y en la API, `n`.
+
+- N = 10 significa 1 depósito + 9 clientes.
+- Una ruta parte del depósito, visita cada cliente exactamente una vez y regresa. Hay
+  (N−1)! rutas posibles, y por eso el problema se vuelve inviable de resolver por fuerza
+  bruta:
+
+| N | Clientes | Rutas posibles (N−1)! |
+|---|---|---|
+| 5 | 4 | 24 |
+| 10 | 9 | 362 880 |
+| 15 | 14 | ≈ 8,7 × 10¹⁰ |
+| 20 | 19 | ≈ 1,2 × 10¹⁷ |
+| 50 | 49 | ≈ 6,1 × 10⁶² |
+
+- Cada algoritmo tiene un tamaño máximo (sección 5). El generador acepta de 2 a 5000
+  nodos y la web, de 2 a 2000.
+
+**Semilla (`seed`).** Es un número entero que inicia el generador de números pseudoaleatorios
+con el que se ubican los clientes dentro del área de Lima. Es lo que hace que las
+instancias sean **reproducibles**.
+
+- Misma N + misma semilla + misma área → **exactamente la misma instancia**, en cualquier
+  computadora. La instancia se identifica con un nombre, por ejemplo `gen-n10-seed42`.
+- Distinta semilla → otra instancia (otras coordenadas). Sirve para tener variedad: el
+  benchmark usa las semillas 1 a 10 en cada tamaño.
+- Con la misma semilla, la instancia de N+1 nodos es la de N nodos más un cliente nuevo.
+  Por eso, al mantener la semilla y subir N, la dificultad puede cambiar de forma
+  irregular (un cliente nuevo puede facilitar o dificultar la poda del backtracking).
+- Los algoritmos son deterministas: el mismo algoritmo sobre la misma instancia devuelve
+  siempre la misma ruta. Lo único que varía entre ejecuciones es el tiempo (y un poco la
+  memoria).
+- Para comparar algoritmos hay que usar **la misma instancia** (mismo N y misma semilla);
+  si cada uno resolviera una instancia distinta, la comparación no valdría.
+- Si una demostración o un resultado interesante sale con una semilla al azar, se anota la
+  semilla para poder repetirlo.
+
 ## 3. Requisitos (Ubuntu)
 
 ```bash
@@ -123,6 +164,48 @@ El mapa necesita internet para cargar las imágenes de fondo.
 - La ruta empieza en el nodo 0 y el costo incluye el regreso al depósito.
 
 ## 6. Benchmark (para el informe)
+
+### Qué evalúa el benchmark
+
+El benchmark resuelve **las mismas instancias** con los cuatro algoritmos y mide qué tan
+bien y a qué costo lo hace cada uno al crecer N. Responde estas preguntas:
+
+1. **¿Hasta qué tamaño es viable cada algoritmo exacto?** Backtracking: a partir de qué N
+   agota el tiempo límite. Held-Karp: se detiene en N=20 por la memoria (O(N·2ᴺ)).
+2. **¿Cuánta calidad se pierde con los algoritmos rápidos?** Es el gap de Nearest Neighbor
+   y de MST + DFS respecto a la mejor ruta.
+3. **¿Cómo crecen el tiempo, las operaciones y la memoria con N?** Se contrasta con la
+   complejidad teórica.
+4. **¿Nearest Neighbor o MST + DFS?** Qué tan rápido es cada uno y cuál da la ruta más
+   corta, instancia por instancia.
+5. **¿Qué estrategia conviene según N?** Los resultados sirven de base para los umbrales de
+   la recomendación adaptativa (pendiente).
+
+**Qué se mide en cada instancia y algoritmo:**
+
+| Métrica | Qué es |
+|---|---|
+| Estado | `ok` (terminó), `timeout` (agotó el tiempo límite) o `skipped` (no admite ese tamaño) |
+| Costo (km) | Longitud de la ruta, incluyendo el regreso al depósito |
+| Gap (%) | Qué tan lejos queda de la referencia; ver "Cómo leer los gaps" más abajo |
+| Tiempo (ms) | Solo la ejecución del algoritmo, con reloj monótono de C++ (sin contar el JSON ni el arranque del proceso) |
+| Operaciones | Unidad de trabajo propia de cada algoritmo (tabla de la sección 5) |
+| Memoria extra (KB) | Pico de memoria menos la memoria base antes de ejecutar el algoritmo |
+
+**Diseño del experimento:** N = 5, 10 a 18, 20 y 50; 10 semillas por tamaño (1 a 10); límite
+de 10 s por algoritmo. Los resultados se resumen con la mediana (costo, tiempo, operaciones
+y memoria) y con el promedio y el máximo (gap). Si la primera ejecución dura menos de
+500 ms, se repite hasta 5 veces y se guarda la mediana del tiempo; las repeticiones además
+verifican que el algoritmo devuelva siempre el mismo costo.
+
+**Qué NO evalúa:**
+
+- La **corrección** de los algoritmos. Eso lo verifica `routeopt-tests` (por ejemplo,
+  Held-Karp y backtracking contra fuerza bruta para N ≤ 9). El benchmark mide rendimiento y
+  calidad, no demuestra que el código sea correcto.
+- Distancias reales por calles, ni la operación de una empresa real: las instancias son
+  aleatorias sobre un rectángulo de Lima con distancias Haversine.
+- Restricciones adicionales (varios vehículos, ventanas de tiempo, capacidad).
 
 Reglas para que los datos sean válidos:
 
