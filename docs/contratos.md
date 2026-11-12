@@ -93,11 +93,11 @@ Respuesta:
 | `held_karp` | 20 | Transiciones de la tabla, m(m-1)·2^(m-2), con m = n-1 |
 
 
-### 3.4 Modo `compare` (pendiente)
+### 3.4 Modo `compare` (eliminado)
 
-Recibirá una lista de resultados y devolverá el gap de cada uno contra la mejor
-solución conocida, el ranking y la recomendación. Se define cuando haya dos
-algoritmos funcionando.
+El motor ya no tiene modo `compare`. La comparación entre algoritmos, el cálculo del
+gap y la referencia se hacen en el servidor Node (`POST /api/compare`, sección 4.4),
+porque son operaciones sobre resultados ya calculados y no requieren un algoritmo.
 
 ### 3.5 Errores del motor
 
@@ -123,18 +123,19 @@ Si el proceso termina con un código distinto de 0, Node lo trata como caída de
 Todas las rutas empiezan por `/api`, usan JSON y devuelven los errores como
 `{"error": {"code": "...", "message": "..."}}`.
 
-| Método y ruta | Qué hace | Lo resuelve |
-|---|---|---|
-| `POST /api/instances/generate` | Genera una instancia (`n`, `seed`, `area` opcional) | Motor (`generate`) |
-| `POST /api/instances/import` | Importa un CSV o JSON y lo convierte a instancia | Node |
-| `POST /api/geocode` | Dirección a latitud y longitud | Servicio externo |
-| `POST /api/distances` | Matriz de distancias vía API externa (con caché) | Servicio externo |
-| `POST /api/solve` | Ejecuta un algoritmo sobre una instancia | Motor (`solve`) |
-| `POST /api/compare` | Ejecuta varios algoritmos y compara | Motor |
-| `POST /api/benchmark` | Lanza un experimento y devuelve un `job_id` | Node + motor |
-| `GET /api/benchmark/:id` | Estado y resultados del experimento | Node |
-| `GET /api/results/:id/export?format=csv\|json` | Descarga resultados | Node |
-| `GET /api/recommendation?n=...` | Estrategia recomendada según el tamaño | Motor |
+| Método y ruta | Qué hace | Lo resuelve | Estado |
+|---|---|---|---|
+| `GET /api/health` | Comprueba que el servidor y el motor responden | Node + motor (`ping`) | Implementado |
+| `POST /api/instances/generate` | Genera una instancia (`n`, `seed`, `area` opcional) | Motor (`generate`) | Implementado |
+| `POST /api/solve` | Ejecuta un algoritmo sobre una instancia | Motor (`solve`) | Implementado |
+| `POST /api/compare` | Ejecuta varios algoritmos en serie y calcula el gap | Node + motor (`solve`) | Implementado |
+| `GET /api/recommendation?n=...` | Estrategia recomendada según el tamaño | Node | Pendiente |
+| `POST /api/instances/import` | Importa un CSV o JSON y lo convierte a instancia | Node | Pendiente |
+| `POST /api/geocode` | Dirección a latitud y longitud | Servicio externo | Pendiente |
+| `POST /api/distances` | Matriz de distancias vía API externa (con caché) | Servicio externo | Pendiente |
+| `POST /api/benchmark` | Lanza un experimento y devuelve un `job_id` | Node + motor | Pendiente |
+| `GET /api/benchmark/:id` | Estado y resultados del experimento | Node | Pendiente |
+| `GET /api/results/:id/export?format=csv\|json` | Descarga resultados | Node | Pendiente |
 
 El benchmark es asíncrono: puede tardar minutos, y React consulta el estado
 cada pocos segundos.
@@ -153,9 +154,75 @@ Respuesta: la misma que devuelve el modo `solve` del motor (sección 3.3).
 Columnas: `id,name,lat,lon,type`, con exactamente una fila de tipo `depot` y las
 demás de tipo `client`.
 
+### 4.4 `POST /api/compare`
+
+Petición:
+
+```json
+{
+  "instance": { "...": "..." },
+  "algorithms": ["nearest_neighbor", "mst_dfs", "held_karp"],
+  "options": {"time_limit_ms": 10000}
+}
+```
+
+`algorithms` y `options` son opcionales. Por defecto corren los tres algoritmos.
+Se ejecutan en serie sobre la misma instancia, para no distorsionar los tiempos.
+
+Respuesta:
+
+```json
+{
+  "instance_id": "gen-n10-seed42",
+  "distance_source": "haversine",
+  "n": 10,
+  "reference": {"cost_m": 58355.5, "type": "optimal", "algorithm": "held_karp"},
+  "best_algorithm": "held_karp",
+  "results": [
+    {"algorithm": "nearest_neighbor", "status": "ok", "cost_m": 59125.4, "gap_pct": 1.32}
+  ]
+}
+```
+
+- `gap_pct = (costo - referencia) / referencia * 100`.
+- `reference.type` es `"optimal"` si Held-Karp terminó. Si no, es `"best_known"`:
+  la mejor solución entre los algoritmos que sí terminaron. En ese caso los gaps
+  no son respecto al óptimo y no deben presentarse como tales.
+- Un algoritmo que no admite el tamaño de la instancia sale con `status: "skipped"`
+  y `gap_pct: null`. Un `timeout` también queda con `gap_pct: null`.
+- Cada elemento de `results` incluye además los campos de la respuesta de `solve`
+  (`route`, `metrics`, etc.).
+
+### 4.5 `GET /api/health`
+
+Respuesta: `{"status": "ok", "server": "routeopt-server", "engine": { ... }}`,
+donde `engine` es la respuesta del `ping` del motor.
+
+### 4.6 Errores HTTP
+
+| Estado | Códigos | Cuándo |
+|---|---|---|
+| 400 | `INVALID_INSTANCE`, `INVALID_REQUEST`, `UNKNOWN_ALGORITHM`, `UNKNOWN_MODE` | Datos de entrada inválidos |
+| 404 | `NOT_FOUND` | La ruta no existe |
+| 413 | `INVALID_REQUEST` | El cuerpo de la petición es demasiado grande |
+| 422 | `INSTANCE_TOO_LARGE` | `/api/solve` con una instancia más grande de lo que admite el algoritmo |
+| 500 | `INTERNAL_ERROR` | Fallo inesperado |
+| 502 | `ENGINE_CRASHED`, `ENGINE_BAD_OUTPUT`, `ENGINE_OUTPUT_TOO_LARGE` | El motor falló o devolvió algo inválido |
+| 503 | `ENGINE_NOT_FOUND`, `ENGINE_START_FAILED` | No se encontró o no se pudo lanzar el motor |
+| 504 | `ENGINE_TIMEOUT` | El motor no respondió y el servidor lo detuvo |
+
+Los errores se devuelven como `{"error": {"code": "...", "message": "..."}}`.
+
+Un `timeout` del algoritmo (el que controla `time_limit_ms`) no es un error HTTP:
+la respuesta es 200 con `status: "timeout"` y `route` y `cost_m` en `null`.
+En `/api/compare`, `INSTANCE_TOO_LARGE` tampoco es un error: ese algoritmo sale
+como `skipped`.
+
 ## 5. Registro de cambios
 
 - 0.1: versión inicial.
 - 0.2: se agrega `metrics.baseline_memory_kb`; se documenta que `timeout` devuelve
   `route` y `cost_m` en `null`; se elimina `"file"` como valor de `distance_source`.
-- 0.3: algoritmos mst_dfs y held_karp; límites de tamaño
+- 0.3: algoritmos `mst_dfs` y `held_karp`; límites de tamaño por algoritmo.
+- 0.4: el gap se calcula en el servidor (`/api/compare`); se elimina el modo `compare`
+  del motor; se agregan `/api/health`, los estados `skipped` y los códigos de error HTTP.
