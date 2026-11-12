@@ -48,4 +48,10 @@ test('un costo de referencia 0 no divide entre cero', () => {
   assert.equal(g.results[0].gap_pct, 0);
 });
 
-
+test('con backtracking terminado la referencia también es el óptimo', () => {
+  const g = computeGaps([
+    { algorithm: 'nearest_neighbor', status: 'ok', cost_m: 120 },
+    { algorithm: 'backtracking', status: 'ok', cost_m: 100 },
+  ]);
+  assert.equal(g.reference.type, 'optimal');
+});

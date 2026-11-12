@@ -1,6 +1,9 @@
 // Calcula el gap (%) de cada resultado respecto a la referencia:
 //  - "optimal": si Held-Karp terminó, la mejor solución es el óptimo.
 //  - "best_known": si no, la mejor solución entre los algoritmos ejecutados.
+
+const EXACT = ['held_karp', 'backtracking'];
+
 function computeGaps(results) {
   const ok = results.filter((r) => r.status === 'ok' && Number.isFinite(r.cost_m));
 
@@ -13,7 +16,7 @@ function computeGaps(results) {
   }
 
   const best = ok.reduce((a, b) => (b.cost_m < a.cost_m ? b : a));
-  const exact = ok.some((r) => r.algorithm === 'held_karp');
+  const exact = ok.some((r) => EXACT.includes(r.algorithm));
   const ref = best.cost_m;
 
   return {

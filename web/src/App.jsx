@@ -35,7 +35,7 @@ function ReferenceNote({ reference }) {
   if (reference.type === 'optimal') {
     return (
       <div className="banner">
-        Referencia: <strong>óptimo</strong> (Held-Karp), {fmtKm(reference.cost_m)} km. Los gaps son
+        Referencia: <strong>óptimo</strong> (confirmado por un algoritmo exacto), {fmtKm(reference.cost_m)} km. Los gaps son
         respecto al óptimo.
       </div>
     )
@@ -43,7 +43,7 @@ function ReferenceNote({ reference }) {
   return (
     <div className="banner warn">
       Referencia: <strong>mejor solución conocida</strong> ({algoMeta(reference.algorithm).label},{' '}
-      {fmtKm(reference.cost_m)} km). Held-Karp no corrió, así que los gaps <strong>no</strong> son
+      {fmtKm(reference.cost_m)} km). Ningun algoritmo exacto termino, asi que los gaps <strong>no</strong> son
       respecto al óptimo.
     </div>
   )
