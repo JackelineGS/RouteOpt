@@ -19,6 +19,8 @@ struct AlgorithmInfo {
 static const std::map<std::string, AlgorithmInfo>& registry() {
     static const std::map<std::string, AlgorithmInfo> r = {
         {"nearest_neighbor", {nearest_neighbor, 5000}},
+        {"mst_dfs", {mst_dfs, 5000}},
+	{"held_karp", {held_karp, 20}},
     };
     return r;
 }

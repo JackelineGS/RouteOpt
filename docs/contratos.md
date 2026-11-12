@@ -85,6 +85,14 @@ Respuesta:
 - Si `status` es `timeout`, `route` y `cost_m` vienen en `null`. `metrics` sí se
   devuelve, con lo medido hasta el corte.
 
+
+| Algoritmo | Tamaño máximo (nodos) | Qué cuenta `operations` |
+|---|---|---|
+| `nearest_neighbor` | 5000 | Comparaciones de distancias |
+| `mst_dfs` | 5000 | Aristas evaluadas en Prim, n(n-1)/2 |
+| `held_karp` | 20 | Transiciones de la tabla, m(m-1)·2^(m-2), con m = n-1 |
+
+
 ### 3.4 Modo `compare` (pendiente)
 
 Recibirá una lista de resultados y devolverá el gap de cada uno contra la mejor
@@ -150,3 +158,4 @@ demás de tipo `client`.
 - 0.1: versión inicial.
 - 0.2: se agrega `metrics.baseline_memory_kb`; se documenta que `timeout` devuelve
   `route` y `cost_m` en `null`; se elimina `"file"` como valor de `distance_source`.
+- 0.3: algoritmos mst_dfs y held_karp; límites de tamaño
