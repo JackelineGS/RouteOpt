@@ -46,7 +46,7 @@ Flujo: React → servidor Node (`127.0.0.1:3001`) → ejecutable `routeopt-engin
 (recibe JSON por la entrada estándar y responde JSON por la salida estándar; un proceso
 por ejecución).
 
-![Arquitectura lógica de RouteOpt](docs/demo.png)
+![Demo de RouteOpt](docs/demo.png)
 *Figura 2. Vista de la demo. Lo primero que se ve es la instancia donde se define la cantidad de nodos y la semilla. Posteriormente estan listados los algoritmos.*
 
 ### 2.1 Conceptos clave: N y semilla
